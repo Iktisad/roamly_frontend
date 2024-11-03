@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Main Feature - Intelligent Travel Companion</title>
+        <link href="../public/styles/output.css" rel="stylesheet">
+    </head>
+
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-4xl bg-white p-10 rounded-lg shadow-lg">
+            <header class="text-center mb-10">
+                <h1 class="text-5xl font-bold text-blue-800 mb-4">Welcome to Your Travel Dashboard</h1>
+                <p class="text-lg text-gray-800">Get personalized recommendations and manage your travel experiences
+                    effortlessly.</p>
+            </header>
+            <main class="space-y-8">
+                <!-- User Profile Setup -->
+                <section class="bg-purple-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-semibold mb-4">Build Your Travel Profile</h2>
+                    <p class="text-lg text-gray-700">Please provide your preferences to personalize your travel
+                        experience:</p>
+                    <form class="mt-6 space-y-4">
+                        <div>
+                            <div>
+                                <label for="meal-times" class="block text-lg font-semibold mb-2">Add Your Meal
+                                    Times</label>
+                                <div id="meal-times" class="space-y-4">
+                                    <div class="flex items-center space-x-4">
+                                        <select class="w-full p-3 border border-gray-300 rounded-lg">
+                                            <option value="breakfast">Breakfast</option>
+                                            <option value="brunch">Brunch</option>
+                                            <option value="lunch">Lunch</option>
+                                            <option value="snack">Snack</option>
+                                            <option value="dinner">Dinner</option>
+                                            <option value="midnight_snack">Midnight Snack</option>
+                                        </select>
+                                        <input type="time" class="w-full p-3 border border-gray-300 rounded-lg">
+                                        <button type="button" onclick="addMealTime()"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300 hover:bg-blue-700">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="cuisines" class="block text-lg font-semibold mb-2">Favorite Cuisines</label>
+                                <input type="text" id="cuisines" class="w-full p-3 border border-gray-300 rounded-lg"
+                                    placeholder="e.g., Italian, Chinese">
+                            </div>
+
+                            <h3 class="text-2xl font-semibold mb-4 mt-4">Preferred Activities</h3>
+                            <div class="">
+                                <!-- Indoor Activities -->
+                                <div>
+                                    <h4 class="text-xl font-semibold mb-2">Indoor Activities</h4>
+                                    <div id="indoor-activities" class="flex flex-wrap space-y-2">
+                                        <!-- Indoor activities checkboxes will be dynamically added here -->
+                                    </div>
+                                </div>
+                                <!-- Outdoor Activities -->
+                                <div class="mt-8">
+                                    <h4 class="text-xl font-semibold mb-2">Outdoor Activities</h4>
+                                    <div id="outdoor-activities" class="flex flex-wrap space-y-2">
+                                        <!-- Outdoor activities checkboxes will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold transition duration-300 hover:bg-green-700">Save
+                            Preferences</button>
+                    </form>
+                </section>
+            </main>
+            <footer class="text-center mt-10">
+                <a href="index.html"
+                    class="bg-blue-600 text-white py-3 px-8 rounded-lg text-lg font-semibold transition duration-300 hover:bg-blue-700">Return
+                    to Home</a>
+            </footer>
+        </div>
+    </body>
+
+</html>
+
+<script>
+    const indoorActivities = {
+        'Arts & Crafts': [
+            { value: 'painting', label: 'Painting' },
+            { value: 'drawing', label: 'Drawing' },
+            { value: 'pottery', label: 'Pottery' },
+            { value: 'scrapbooking', label: 'Scrapbooking' },
+            { value: 'calligraphy', label: 'Calligraphy' }
+        ],
+        'Games & Puzzles': [
+            { value: 'board_games', label: 'Board Games' },
+            { value: 'card_games', label: 'Card Games' },
+            { value: 'escape_room_games', label: 'Escape Room Games' },
+            { value: 'jigsaw_puzzles', label: 'Jigsaw Puzzles' },
+            { value: 'chess', label: 'Chess' }
+        ],
+        'Learning & Education': [
+            { value: 'cooking_classes', label: 'Cooking Classes' },
+            { value: 'language_learning', label: 'Language Learning' },
+            { value: 'yoga_sessions', label: 'Yoga Sessions' },
+            { value: 'music_lessons', label: 'Music Lessons (e.g., piano, guitar)' },
+            { value: 'science_experiments', label: 'Science Experiments' }
+        ],
+        'Entertainment': [
+            { value: 'watching_movies', label: 'Watching Movies' },
+            { value: 'theater_play', label: 'Visiting a Theater for a Play' },
+            { value: 'art_gallery', label: 'Visiting an Art Gallery' },
+            { value: 'live_music', label: 'Listening to Live Music' },
+            { value: 'stand_up_comedy', label: 'Stand-up Comedy Shows' }
+        ],
+        'Fitness & Wellbeing': [
+            { value: 'gym_workouts', label: 'Gym Workouts' },
+            { value: 'dance_classes', label: 'Dance Classes (e.g., Zumba, Salsa)' },
+            { value: 'meditation_sessions', label: 'Meditation Sessions' },
+            { value: 'indoor_rock_climbing', label: 'Indoor Rock Climbing' },
+            { value: 'aerobics', label: 'Aerobics' }
+        ],
+        'Social Activities': [
+            { value: 'escape_rooms', label: 'Escape Rooms' },
+            { value: 'karaoke', label: 'Karaoke' },
+            { value: 'trivia_nights', label: 'Trivia Nights' },
+            { value: 'bowling', label: 'Bowling' },
+            { value: 'indoor_mini_golf', label: 'Indoor Mini-Golf' }
+        ],
+        'Relaxation & Wellness': [
+            { value: 'spa_treatments', label: 'Spa Treatments' },
+            { value: 'sauna_steam_bath', label: 'Sauna/Steam Bath' },
+            { value: 'indoor_swimming', label: 'Indoor Swimming' },
+            { value: 'massage_sessions', label: 'Massage Sessions' },
+            { value: 'meditation_classes', label: 'Meditation Classes' }
+        ],
+        'Hobbies & Workshops': [
+            { value: 'cooking_baking', label: 'Cooking or Baking' },
+            { value: 'pottery_workshops', label: 'Pottery Workshops' },
+            { value: 'sewing_knitting', label: 'Sewing/Knitting' },
+            { value: 'diy_home_decor', label: 'DIY Home Decor' },
+            { value: 'book_clubs', label: 'Book Clubs' }
+        ],
+        'Technological & Virtual Activities': [
+            { value: 'vr_experiences', label: 'Virtual Reality Experiences' },
+            { value: 'video_gaming', label: 'Video Gaming' },
+            { value: 'coding_workshops', label: 'Coding Workshops' },
+            { value: 'podcast_recording', label: 'Podcast Recording' },
+            { value: 'vr_escape_rooms', label: 'VR Escape Rooms' }
+        ],
+        'Cultural & Educational Visits': [
+            { value: 'museums', label: 'Museums' },
+            { value: 'historical_sites', label: 'Historical Sites' },
+            { value: 'planetariums', label: 'Planetariums' },
+            { value: 'aquariums', label: 'Aquariums' },
+            { value: 'cultural_heritage_centers', label: 'Cultural Heritage Centers' }
+        ]
+    };
+
+
+    const outdoorActivities = {
+        'Nature & Exploration': [
+            { value: 'hiking', label: 'Hiking' },
+            { value: 'nature_walks', label: 'Nature Walks' },
+            { value: 'bird_watching', label: 'Bird Watching' },
+            { value: 'beach_visits', label: 'Beach Visits' },
+            { value: 'camping', label: 'Camping' },
+            { value: 'forest_bathing', label: 'Forest Bathing' },
+            { value: 'wildlife_safari', label: 'Wildlife Safari' }
+        ],
+        'Water Activities': [
+            { value: 'kayaking', label: 'Kayaking' },
+            { value: 'boating', label: 'Boating' },
+            { value: 'fishing', label: 'Fishing' },
+            { value: 'snorkeling', label: 'Snorkeling' },
+            { value: 'paddle_boarding', label: 'Paddle Boarding' },
+            { value: 'rafting', label: 'Rafting' },
+            { value: 'scuba_diving', label: 'Scuba Diving' }
+        ],
+        'Adventure & Sports': [
+            { value: 'rock_climbing', label: 'Rock Climbing' },
+            { value: 'mountain_biking', label: 'Mountain Biking' },
+            { value: 'zip_lining', label: 'Zip Lining' },
+            { value: 'skydiving', label: 'Skydiving' },
+            { value: 'bungee_jumping', label: 'Bungee Jumping' },
+            { value: 'paragliding', label: 'Paragliding' },
+            { value: 'sandboarding', label: 'Sandboarding' }
+        ],
+        'Parks & Recreation': [
+            { value: 'city_parks', label: 'City Parks' },
+            { value: 'picnic', label: 'Picnic' },
+            { value: 'botanical_gardens', label: 'Botanical Gardens' },
+            { value: 'outdoor_festivals', label: 'Outdoor Festivals' },
+            { value: 'community_events', label: 'Community Events' },
+            { value: 'wildflower_viewing', label: 'Wildflower Viewing' },
+            { value: 'stargazing', label: 'Stargazing' }
+        ],
+        'Fitness & Wellbeing': [
+            { value: 'cycling', label: 'Cycling' },
+            { value: 'outdoor_yoga', label: 'Outdoor Yoga' },
+            { value: 'jogging', label: 'Jogging' },
+            { value: 'outdoor_gym', label: 'Outdoor Gym' },
+            { value: 'rollerblading', label: 'Rollerblading' },
+            { value: 'trail_running', label: 'Trail Running' },
+            { value: 'tai_chi', label: 'Tai Chi in the Park' }
+        ],
+        'Cultural & Historical Exploration': [
+            { value: 'guided_tours', label: 'Guided Historical Tours' },
+            { value: 'archaeological_sites', label: 'Archaeological Sites' },
+            { value: 'outdoor_museums', label: 'Outdoor Museums' },
+            { value: 'local_markets', label: 'Exploring Local Markets' },
+            { value: 'historical_reenactments', label: 'Historical Reenactments' }
+        ]
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const indoorActivitiesContainer = document.querySelector('#indoor-activities');
+        for (const [category, activities] of Object.entries(indoorActivities)) {
+            const categoryContainer = document.createElement('div');
+            categoryContainer.classList.add('w-1/2', 'p-4');
+
+            const categoryTitle = document.createElement('h5');
+            categoryTitle.classList.add('text-lg', 'font-semibold', 'mb-2');
+            categoryTitle.textContent = category;
+            categoryContainer.appendChild(categoryTitle);
+
+            activities.forEach(activity => {
+                const labelElement = document.createElement('label');
+                labelElement.classList.add('inline-flex', 'items-center', 'mb-2', 'block');
+
+                const inputElement = document.createElement('input');
+                inputElement.type = 'checkbox';
+                inputElement.classList.add('form-checkbox');
+                inputElement.value = activity.value;
+
+                const spanElement = document.createElement('span');
+                spanElement.classList.add('ml-2');
+                spanElement.textContent = activity.label;
+
+                labelElement.appendChild(inputElement);
+                labelElement.appendChild(spanElement);
+                categoryContainer.appendChild(labelElement);
+            });
+
+            indoorActivitiesContainer.appendChild(categoryContainer);
+        }
+
+        const outdoorActivitiesContainer = document.querySelector('#outdoor-activities');
+        for (const [category, activities] of Object.entries(outdoorActivities)) {
+            const categoryContainer = document.createElement('div');
+            categoryContainer.classList.add('w-1/2', 'p-4');
+
+            const categoryTitle = document.createElement('h5');
+            categoryTitle.classList.add('text-lg', 'font-semibold', 'mb-2');
+            categoryTitle.textContent = category;
+            categoryContainer.appendChild(categoryTitle);
+
+            activities.forEach(activity => {
+                const labelElement = document.createElement('label');
+                labelElement.classList.add('inline-flex', 'items-center', 'mb-2', 'block');
+
+                const inputElement = document.createElement('input');
+                inputElement.type = 'checkbox';
+                inputElement.classList.add('form-checkbox');
+                inputElement.value = activity.value;
+
+                const spanElement = document.createElement('span');
+                spanElement.classList.add('ml-2');
+                spanElement.textContent = activity.label;
+
+                labelElement.appendChild(inputElement);
+                labelElement.appendChild(spanElement);
+                categoryContainer.appendChild(labelElement);
+            });
+
+            outdoorActivitiesContainer.appendChild(categoryContainer);
+        }
+    });
+
+
+
+
+
+    function addMealTime() {
+        const mealTimesDiv = document.getElementById('meal-times');
+        const mealType = document.querySelector('#meal-times select').value;
+        const mealTime = document.querySelector('#meal-times input[type="time"]').value;
+
+        // Check if meal type or time already exists
+        const existingMeals = document.querySelectorAll('#meal-times p');
+        for (let meal of existingMeals) {
+            if (meal.innerText.includes(mealType)) {
+                alert(`Error: ${mealType} has already been added.`);
+                return;
+            }
+            if (meal.innerText.includes(mealTime)) {
+                alert(`Error: A meal is already scheduled at ${mealTime}. Please choose a different time.`);
+                return;
+            }
+        }
+
+        if (mealType && mealTime) {
+            const newMealTime = document.createElement('div');
+            newMealTime.classList.add('flex', 'items-center', 'space-x-4', 'mt-4', 'bg-gray-200', 'p-4', 'rounded-lg', 'shadow-md');
+            newMealTime.innerHTML = `
+                <p class="w-full text-lg font-semibold">${mealType} at ${mealTime}</p>
+                <button type="button" onclick="removeMealTime(this)" class="bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300 hover:bg-red-700">Remove</button>
+            `;
+            mealTimesDiv.appendChild(newMealTime);
+        }
+    }
+
+    function removeMealTime(button) {
+        button.parentElement.remove();
+    }
+</script>
