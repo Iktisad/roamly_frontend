@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather & Location</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="min-h-screen bg-blue-100 flex items-center justify-center p-4">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Weather & Location</h1>
+        <div id="loading" class="text-xl text-gray-700">Loading...</div>
+        <div id="weather-info" class="hidden bg-white shadow-lg rounded-lg p-6 text-center">
+            <h2 id="location-name" class="text-2xl font-semibold text-gray-800"></h2>
+            <p id="weather-description" class="text-lg text-gray-600"></p>
+            <p id="temperature" class="text-4xl font-bold text-gray-800"></p>
+            <p id="coordinates" class="text-sm text-gray-500 mt-2"></p>
+        </div>
+        <div id="error-message" class="hidden text-red-500 text-lg"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadingElement = document.getElementById("loading");
+            const weatherInfoElement = document.getElementById("weather-info");
+            const errorMessageElement = document.getElementById("error-message");
+            const locationNameElement = document.getElementById("location-name");
+            const weatherDescriptionElement = document.getElementById("weather-description");
+            const temperatureElement = document.getElementById("temperature");
+            const coordinatesElement = document.getElementById("coordinates");
+
+            // Get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        console.log(latitude, longitude);
+                        try {
+                            // Fetch weather data
+                            const apiKey = '74877bd7268a9dd52cda3ae7cf3dc300'; // Replace with your API key
+                            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+                            const response = await fetch(url);
+                            console.log(response);
+                            if (!response.ok) throw new Error("Failed to fetch weather data");
+
+                            const weatherData = await response.json();
+                            loadingElement.classList.add("hidden");
+                            weatherInfoElement.classList.remove("hidden");
+
+                            // Update weather info
+                            locationNameElement.textContent = weatherData.name;
+                            weatherDescriptionElement.textContent = weatherData.weather[0].description;
+                            temperatureElement.textContent = `${Math.round(weatherData.main.temp)}°C`;
+                            coordinatesElement.textContent = `Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}`;
+                        } catch (error) {
+                            loadingElement.classList.add("hidden");
+                            errorMessageElement.classList.remove("hidden");
+                            errorMessageElement.textContent = "Error: " + error.message;
+                        }
+                    },
+                    (error) => {
+                        loadingElement.classList.add("hidden");
+                        errorMessageElement.classList.remove("hidden");
+                        errorMessageElement.textContent = "Error getting location: " + error.message;
+                    }
+                );
+            } else {
+                loadingElement.classList.add("hidden");
+                errorMessageElement.classList.remove("hidden");
+                errorMessageElement.textContent = "Geolocation not supported by this browser.";
+            }
+        });
+
+    </script>
+</body>
+
+</html>
