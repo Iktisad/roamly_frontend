@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Onboarding - Intelligent Travel Companion</title>
+        <link href="../public/styles/output.css" rel="stylesheet">
+    </head>
+   
+    <body class="bg-gray-100 text-gray-600 flex items-center justify-center min-h-screen relative">
+         <!-- Background Image -->
+        <div class="hidden lg:block absolute inset-0 bg-cover bg-center bg-repeat opacity-10 z-0"
+            style="background-image: url('../public/imgs/onboarding_theme_2.png'); background-size: 30%;">
+        </div>
+
+
+        <div class="relative z-10 w-full max-w-4xl bg-white p-10 rounded-lg shadow-lg">
+            <header class="text-center mb-10">
+                <h1 class="text-5xl font-medium mb-4">Profile Board</h1>
+            </header>
+            <main class="space-y-8">
+                <!-- User Profile Setup -->
+                <section class="bg-gray-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-3xl font-normal mb-4">Build Your Roamly Profile</h2>
+                    <p class="text-lg">Please provide your preferences to personalize your travel
+                        experience:</p>
+                    <form class="mt-6 space-y-4">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-lg font-semibold mb-2">Add Your Meal
+                                    Times</label>
+                                <div id="meal-times" class="space-y-4">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Meal Type Dropdown -->
+                                        <select id="meal-type" 
+                                                onchange="updateTimeDropdown()" 
+                                                class="appearance-none focus:outline-none focus:ring-2 focus:ring-orange-300 w-full p-3 border border-orange-200 rounded-lg">
+                                            <option value="" disabled selected>Select Meal Type</option>
+                                            <option value="breakfast">Breakfast</option>
+                                            <option value="brunch">Brunch</option>
+                                            <option value="lunch">Lunch</option>
+                                            <option value="snack">Snack</option>
+                                            <option value="dinner">Dinner</option>
+                                            <option value="midnight_snack">Midnight Snack</option>
+                                        </select>
+                                
+                                        <!-- Time Dropdown -->
+                                        <select id="meal-time" 
+                                                class="appearance-none focus:outline-none focus:ring-2 focus:ring-orange-300 w-full p-3 border border-orange-200 rounded-lg">
+                                            <option value="" disabled selected>Select Time</option>
+                                            <!-- Options populated dynamically -->
+                                        </select>
+                                        <!-- Add Meal Button -->
+                                            <button type="button" onclick="addMealTime()" 
+                                            class="bg-rose-400 text-white px-4 py-2 rounded-lg transition duration-300 hover:bg-rose-500">
+                                            Add
+                                        </button>
+                                    </div>
+                                     <!-- Meal Tags Container -->
+                                    <div id="meal-tags" class="flex flex-wrap gap-2 mt-4"></div>
+                                </div>
+                                
+                                    
+                            </div>
+                            <div class="relative">
+                                <label for="cuisines" class="block text-lg font-semibold mb-2">Favorite Cuisines</label>
+                                <input 
+                                    type="text" 
+                                    id="cuisines" 
+                                    class="appearance-none focus:outline-none focus:ring-2 focus:ring-orange-300 w-full p-3 border border-orange-200 rounded-lg" 
+                                    placeholder="e.g., Italian, Chinese"
+                                    oninput="showSuggestions(this)"
+                                    onkeydown="preventFormSubmit(event)"
+                                >
+                                <!-- Suggestions Dropdown -->
+                                <div 
+                                    id="suggestions" 
+                                    class="absolute w-full bg-white border border-gray-300 rounded-lg shadow-md mt-2 max-h-40 overflow-y-auto hidden z-10">
+                                </div>
+                                <!-- Tags Container -->
+                                <div id="tags" class="mt-4 flex flex-wrap gap-2"></div>
+                            </div>
+
+                            <h3 class="text-lg font-semibold mb-4 mt-4">Preferred Activities</h3>
+                            <div class="mt-8">
+                                <h4 class="text-md border-b border-orange-200 font-semibold mb-8">Indoor Activities</h4>
+                                
+                                <div id="indoor-activities" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h4 class="text-md border-b border-orange-200 font-semibold mb-8">Outdoor Activities</h4>
+                               
+                                <div id="outdoor-activities" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div class="mt-8">
+                                <button type="submit"
+                                    class="bg-rose-400 hover:bg-rose-500 w-full text-white py-3 px-6 rounded-lg text-lg font-semibold transition duration-300">
+                                    Save Preferences
+                                </button>
+    
+                            </div>
+                        </div>
+                       
+                    </form>
+                </section>
+            </main>
+            <footer class="text-center mt-10">
+                <a href="../index.html"
+                    class="bg-blue-600 text-white py-3 px-8 rounded-lg text-lg font-semibold transition duration-300 hover:bg-blue-700">Return
+                    to Home</a>
+            </footer>
+        </div>
+    </body>
+
+</html>
+
+<script>
+    // Meal type time ranges
+    const mealTimeRanges = {
+        breakfast: ["06:00", "10:00"],
+        brunch: ["10:00", "12:00"],
+        lunch: ["12:00", "14:00"],
+        snack: ["15:00", "17:00"],
+        dinner: ["18:00", "21:00"],
+        midnight_snack: ["22:00", "23:59"]
+    };
+
+ 
+    // Generate time intervals (every 15 minutes)
+    function generateTimeIntervals(start, end) {
+        const times = [];
+        let current = new Date(`1970-01-01T${start}:00`);
+        const endTime = new Date(`1970-01-01T${end}:00`);
+
+        while (current <= endTime) {
+            const hours = String(current.getHours()).padStart(2, "0");
+            const minutes = String(current.getMinutes()).padStart(2, "0");
+            times.push(`${hours}:${minutes}`);
+            current.setMinutes(current.getMinutes() + 15);
+        }
+
+        return times;
+    }
+
+    // Update the time dropdown based on the selected meal type
+    function updateTimeDropdown() {
+        const mealType = document.getElementById("meal-type").value;
+        const timeDropdown = document.getElementById("meal-time");
+
+        // Clear existing options
+        timeDropdown.innerHTML = "";
+
+        if (mealType) {
+            const [start, end] = mealTimeRanges[mealType];
+            const validTimes = generateTimeIntervals(start, end);
+
+            // Populate the dropdown with valid times
+            validTimes.forEach(time => {
+                const option = document.createElement("option");
+                option.value = time;
+                option.textContent = time;
+                timeDropdown.appendChild(option);
+            });
+        }
+    }
+
+    // Set to track used meal types
+    const usedMealTypes = new Set();
+    const addedMealTimes = new Set();
+    
+
+    function addMealTime() {
+        const mealType = document.getElementById('meal-type').value;
+        const mealTime = document.getElementById('meal-time').value;
+
+        if (!mealType || !mealTime) {
+            alert("Please select both a meal type and a valid time.");
+            return;
+        }
+
+        const mealTag = `${mealType} at ${mealTime}`;
+
+        // Check for duplicates
+        if (addedMealTimes.has(mealTag)) {
+            alert(`${mealTag} has already been added.`);
+            return;
+        }
+
+        // Add to the list
+    
+        addedMealTimes.add(mealTag);
+        usedMealTypes.add(mealType);
+        
+        updateMealTypeDropdown();
+    
+
+        // Create a new tag
+        const mealTagsContainer = document.getElementById('meal-tags');
+        const tag = document.createElement('div');
+        tag.className = 'bg-orange-100 border-2 border-orange-400 text-gray-700 px-3 py-3 rounded-lg flex items-center space-x-2 shadow-sm';
+
+        tag.innerHTML = `
+            <span>${mealTag}</span>
+            <button type="button" class="text-red-600 hover:text-red-800" onclick="removeMealTime('${mealTag}', '${mealType}')">&times;</button>
+        `;
+
+        mealTagsContainer.appendChild(tag);
+
+        // Clear the time input
+        document.getElementById('meal-type').value = "";
+        // Clear the dropdown values after adding
+        document.getElementById('meal-time').innerHTML = '<option value="" disabled selected>Select Time</option>';
+    }
+
+    // Remove a meal-time tag
+    function removeMealTime(mealTag, mealType) {
+        // Remove from the set
+        addedMealTimes.delete(mealTag);
+
+        // Remove the meal type from used types
+        usedMealTypes.delete(mealType);
+        updateMealTypeDropdown();
+
+        // Remove the tag element
+        const mealTagsContainer = document.getElementById("meal-tags");
+        const tags = Array.from(mealTagsContainer.children);
+        tags.forEach(tag => {
+            if (tag.textContent.includes(mealTag)) {
+                tag.remove();
+            }
+        });
+    }
+    // Update the meal type dropdown dynamically
+    function updateMealTypeDropdown() {
+        const mealTypeDropdown = document.getElementById("meal-type");
+
+        // Reset all options
+        Array.from(mealTypeDropdown.options).forEach(option => {
+            option.disabled = false;
+        });
+
+        // Disable used options
+        usedMealTypes.forEach(mealType => {
+            const option = Array.from(mealTypeDropdown.options).find(
+                opt => opt.value === mealType
+            );
+            if (option) {
+                option.disabled = true;
+            }
+        });
+    }
+
+
+    const indoorActivities = [
+            'Painting' ,'Drawing' ,'Pottery' ,'Scrapbooking' ,'Calligraphy', 
+            'Board Games' ,'Card Games' ,'Escape Room Games' ,'Jigsaw Puzzles',
+            'Chess','Cooking Classes' ,'Language Learning' ,'Yoga Sessions' ,
+            'Music Lessons (e.g., piano, guitar)', 'Science Experiments', 'Watching Movies',
+            'Visiting a Theater for a Play' ,'Visiting an Art Gallery' ,'Listening to Live Music',
+            'Stand-up Comedy Shows', 'Gym Workouts','Dance Classes (e.g., Zumba, Salsa)', 
+            'Meditation Sessions','Indoor Rock Climbing','Aerobics', 'Escape Rooms', 'Karaoke', 
+            'Trivia Nights','Bowling','Indoor Mini-Golf', 'Spa Treatments','Sauna/Steam Bath',
+            'Indoor Swimming','Massage Sessions','Meditation Classes','Cooking or Baking',
+            'Pottery Workshops','Sewing/Knitting','DIY Home Decor', 'Book Clubs','Virtual Reality Experiences' ,
+            'Video Gaming' ,'Coding Workshops' ,'Podcast Recording' ,'VR Escape Rooms','Museums' ,
+            'Historical Sites' ,'Planetariums' ,'Aquariums' ,'Cultural Heritage Centers' 
+        ];
+
+
+    const outdoorActivities = [
+            'Hiking','Nature Walks' ,'Bird Watching','Beach Visits','Camping',
+            'Forest Bathing','Wildlife Safari','Kayaking','Boating','Fishing','Snorkeling',
+            'Paddle Boarding','Rafting','Scuba Diving','Rock Climbing','Mountain Biking','Zip Lining',
+            'Skydiving','Bungee Jumping','Paragliding','Sandboarding','City Parks' ,'Picnic' ,
+            'Botanical Gardens' ,'Outdoor Festivals' ,'Community Events' ,'Wildflower Viewing' ,
+            'Stargazing', 'Cycling' ,'Outdoor Yoga' ,'Jogging' ,'Outdoor Gym' ,'Rollerblading' ,
+            'Trail Running' ,'Tai Chi in the Park', 'Guided Historical Tours' ,'Archaeological Sites' ,
+            'Outdoor Museums' ,'Exploring Local Markets' ,'Historical Reenactments' 
+        ];
+
+    function preventFormSubmit(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            const input = event.target;
+            const suggestion = document.querySelector('#suggestions div'); // Select the first suggestion
+            if (suggestion) {
+                addTag(suggestion.textContent.trim());
+            }
+        }
+    }
+    const selectedActivities = {
+        indoor: new Set(),
+        outdoor: new Set(),
+    };
+   // Function to create activity tags dynamically
+function createActivityTags(containerId, activities, type) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear existing tags
+
+    activities.forEach(activity => {
+        const tag = document.createElement('div');
+        tag.textContent = activity;
+        tag.tabIndex = 0; // Make tag focusable
+        tag.className =
+            "cursor-pointer bg-gray-200 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-300 transition duration-300";
+
+        // Add click and key events
+        tag.addEventListener('click', () => toggleActivitySelection(tag, activity, type));
+        tag.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleActivitySelection(tag, activity, type);
+            }
+        });
+
+        container.appendChild(tag);
+    });
+}
+    // Function to toggle activity selection with limits
+function toggleActivitySelection(tag, activity, type) {
+    const selected = selectedActivities[type];
+    const containerId = type === 'indoor' ? 'indoor-activities' : 'outdoor-activities';
+    const container = document.getElementById(containerId);
+    if (selected.has(activity)) {
+        // Allow deselection only if more than 1 item is selected
+        if (selected.size > 1) {
+            selected.delete(activity);
+            tag.classList.remove("bg-rose-500", "text-white", "hover:bg-rose-600");
+            tag.classList.add("bg-gray-200", "text-gray-700","hover:bg-gray-300");
+        } else {
+            alert(`You must select at least 1 ${type} activity.`);
+        }
+    } else {
+        // Enforce maximum limit
+        if (selected.size < 10) {
+            selected.add(activity);
+            tag.classList.remove("bg-gray-200", "text-gray-700","hover:bg-gray-300");
+            tag.classList.add("bg-rose-500", "text-white", "hover:bg-rose-600");
+        } else {
+            alert(`You can only select up to 10 ${type} activities.`);
+        }
+    }
+     // Disable or enable remaining tags based on the selection limit
+     updateActivityAvailability(container, selected.size >= 10);
+}
+// Function to update activity availability
+function updateActivityAvailability(container, shouldDisable) {
+    const tags = container.querySelectorAll('.cursor-pointer');
+    tags.forEach(tag => {
+        // Skip already selected activities
+        if (!tag.classList.contains("bg-rose-500")) {
+            tag.classList.toggle("opacity-50", shouldDisable);
+            tag.classList.toggle("pointer-events-none", shouldDisable);
+        }
+    });
+}
+
+// Initialize tags for indoor and outdoor activities
+createActivityTags("indoor-activities", indoorActivities, 'indoor');
+createActivityTags("outdoor-activities", outdoorActivities, 'outdoor');
+
+
+    const cuisines = [
+    "Italian", "Chinese", "Indian", "Thai", "Mexican", "Japanese", 
+    "Korean", "Mediterranean", "French", "Spanish", "Greek", 
+    "Vietnamese", "Turkish", "Caribbean", "Lebanese", 
+    "American", "Brazilian", "Argentinian", "Cuban", "Ethiopian", 
+    "Moroccan", "Russian", "German", "Polish", "Filipino", 
+    "Malaysian", "Indonesian", "Pakistani", "Burmese", "Persian", 
+    "Portuguese", "South African", "Australian", "Nepalese", 
+    "Bangladeshi", "Hawaiian", "Jamaican", "Swiss", "Saudi", 
+    "Egyptian", "Iraqi", "Afghan", "Scandinavian", "Belgian", 
+    "Peruvian", "Colombian", "Chilean", "Ecuadorian", "Bolivian", 
+    "Uzbek", "Kazakh", "Ukrainian", "Israeli", "Cajun", 
+    "Creole", "Soul Food", "Tex-Mex", "Barbecue", "Tibetan"
+];
+
+
+    let selectedCuisines = [];
+
+    function showSuggestions(input) {
+        const query = input.value.toLowerCase();
+        const suggestionsContainer = document.getElementById('suggestions');
+        suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+        suggestionsContainer.classList.add('hidden');
+
+        if (query) {
+            // Filter cuisines
+            const matches = cuisines.filter(
+                cuisine => cuisine.toLowerCase().includes(query) && !selectedCuisines.includes(cuisine)
+            );
+
+            // Create suggestions dropdown
+            matches.forEach(match => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = match;
+                suggestion.className = 'p-2 hover:bg-gray-200 cursor-pointer';
+                suggestion.onclick = () => addTag(match);
+                suggestionsContainer.appendChild(suggestion);
+            });
+
+            if (matches.length > 0) {
+                suggestionsContainer.classList.remove('hidden');
+            }
+        }
+    }
+
+    function addTag(cuisine) {
+        if (!selectedCuisines.includes(cuisine)) {
+            selectedCuisines.push(cuisine);
+
+            // Add tag
+            const tagsContainer = document.getElementById('tags');
+            const tag = document.createElement('div');
+            tag.className = 'border-2 border-orange-400 text-gray-700 px-3 py-2 rounded-lg flex items-center space-x-2 shadow-sm';
+
+            tag.innerHTML = `
+                <span>${cuisine}</span>
+                <button type="button" onclick="removeTag('${cuisine}')" class="text-red-600 hover:text-red-800">&times;</button>
+            `;
+            tagsContainer.appendChild(tag);
+
+            // Clear input and suggestions
+            document.getElementById('cuisines').value = '';
+            document.getElementById('suggestions').classList.add('hidden');
+        }
+    }
+
+    function removeTag(cuisine) {
+        // Remove from selectedCuisines
+        selectedCuisines = selectedCuisines.filter(selected => selected !== cuisine);
+
+        // Remove tag element
+        const tagsContainer = document.getElementById('tags');
+        const tags = Array.from(tagsContainer.children);
+        tags.forEach(tag => {
+            if (tag.textContent.includes(cuisine)) {
+                tag.remove();
+            }
+        });
+    }
+</script>

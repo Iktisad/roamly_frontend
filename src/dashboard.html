@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Companion Dashboard</title>
+    <link href="../public/styles/output.css" rel="stylesheet">
+    <style>
+        /* Styling for the digital clock */
+        .digital-clock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #f0f0f3, #d1d9e6);
+            box-shadow: 5px 5px 15px #bec8d6, -5px -5px 15px #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+        }
+
+        .clock-time {
+            font-weight: bold;
+            color: #2d3748;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .clock-hours-minutes {
+            font-size: 2.8rem;
+        }
+
+        .clock-seconds {
+            font-size: 1.2rem;
+            color: #718096;
+            margin-left: 5px;
+        }
+
+        .clock-date {
+            font-size: 1rem;
+            color: #4a5568;
+            font-weight: 500;
+            text-align: center;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+    </style>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdivciK3KtJRU3IT_ejMqCQ2gxoB5_GXA" loading="lazy">
+    </script> -->
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-600">
+    <!-- Header -->
+    <header class="bg-gray-200 border-b-2 border-neutral-300 text-gray-700 p-4 shadow-md">
+        <div class="container mx-auto flex items-center justify-between ">
+            <h1 class="text-2xl font-semibold">Roamly Dashboard</h1>
+            <button id="sign-out" class="flex items-center space-x-2 text-gray-700 hover:text-gray-600">
+                <span class="font-semibold">Sign Out</span>
+                <img src="../public/svgs/login-svgrepo-com.svg" class="h-5 w-5" alt="Sign Out Icon">
+            </button>
+        </div>
+    </header>
+    <!-- Welcome Banner -->
+    <div class="container mx-auto py-4 flex">
+        <div id="welcome-banner" class="p-4 text-2xl font-medium inline-block">
+            <p id="custom-greeting" class="text-center">Welcome, User!</p>
+        </div>
+    </div>
+    <!-- Alerts Section -->
+    <section class="container mx-auto py-4">
+        <div id="alerts" class="bg-white p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold">Alerts & Notifications</h2>
+            <div id="notifications" class="text-gray-500 mt-2">
+                <p>No alerts at the moment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Widgets Section -->
+    <section class="py-6 container mx-auto">
+        <div class="flex flex-wrap justify-between gap-6">
+
+            <!-- User Profile -->
+            <div id="profile" class="bg-white shadow-lg rounded-xl w-72 h-72 flex flex-col border border-gray-200">
+                <!-- Card Header -->
+                <div class="w-full py-4 px-4 border-b border-orange-200 rounded-t-xl">
+                    <h2 class="text-xl font-semibold">User Profile</h2>
+                </div>
+
+                <!-- Card Body -->
+                <div class="flex-grow p-4">
+                    <p id="user-preferences" class="mt-2">Loading user preferences...</p>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="w-full py-4 px-4 flex justify-center rounded-b-xl">
+                    <a id="edit-preferences" href="./onboarding.html"
+                        class="bg-rose-400 hover:bg-rose-500 text-white text-sm font-semibold py-2 px-4 rounded">
+                        Edit Preferences
+                    </a>
+                </div>
+            </div>
+
+            <!-- Clock Widget -->
+            <div
+                class="bg-gradient-to-br from-gray-100 to-gray-300 shadow-lg rounded-xl p-6 w-72 h-72 flex flex-col justify-center items-center">
+                <div class="text-4xl font-bold">
+                    <p id="clock-seconds" class="text-gray-400 text-right">00</p>
+                    <span id="clock-hours-minutes" class="clock-hours-minutes">00:00</span>
+                </div>
+                <div id="clock-date" class="text-sm mt-4">Loading...</div>
+            </div>
+
+            <!-- Weather Widget -->
+            <div id="weather-card"
+                class="shadow-lg rounded-xl p-6 w-72 h-72 flex flex-col justify-between items-center bg-gradient-to-br from-gray-100 to-gray-300 relative overflow-hidden">
+                <!-- Blended GIF -->
+                <div class="absolute top-0 left-0 w-full h-1/2 bg-contain bg-no-repeat bg-center mix-blend-multiply"
+                    id="weather-gif-container"
+                    style="background-image: url('../public/icons/temperature.gif'); opacity: 0.1;">
+                </div>
+
+                <!-- Text Content -->
+                <div class="relative z-10 mt-16 text-center px-4">
+                    <h2 id="weather-location" class="text-2xl font-bold">Loading Location...</h2>
+                    <p id="weather-condition" class="text-xl font-medium mt-2">Fetching Weather...</p>
+                    <p id="weather-temp" class="text-4xl font-semibold mt-4">--°C</p>
+                </div>
+            </div>
+
+            <!-- Google Maps Widget -->
+            <div
+                class="bg-white shadow-lg rounded-xl w-72 h-72 flex flex-col justify-between items-center border border-gray-200">
+                <!-- Card Header -->
+                <div class="w-full py-2 px-4 border-b border-orange-200 rounded-t-xl">
+                    <p class="text-xl font-semibold">Location : <span id="address" class="text-sm font-normal"></span>
+                    </p>
+                </div>
+
+                <!-- Google Map Container -->
+                <div id="map" class="flex-grow w-full h-full rounded-b-xl"></div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Main Content -->
+    <main class="py-6 container mx-auto space-y-6">
+        <!-- Recommendations Section -->
+
+
+        <section id="recommendations" class="bg-white p-4 rounded-lg shadow space-y-6">
+            <h2 class="text-xl font-semibold">Recommendations</h2>
+
+            <!-- Suggestions Section -->
+            <div id="suggestions" class="space-y-4">
+                <h3 class="text-lg font-semibold">Personalized Suggestions</h3>
+                <div id="suggestion-cards"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 transition-opacity duration-500 opacity-100">
+                    <!-- Cards will be dynamically added here -->
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex justify-center items-center space-x-2 mt-4" data-section="restaurant">
+                    <button
+                        class="prev-btn bg-rose-400 hover:bg-rose-500 text-white py-2 px-4 rounded disabled:opacity-50"
+                        disabled>Previous</button>
+                    <span class="page-indicator text-gray-700">Page 1</span>
+                    <button class="next-btn bg-rose-400 hover:bg-rose-500 text-white py-2 px-4 rounded">Next</button>
+                </div>
+
+                <h3 class="text-lg font-semibold">Popular Choices</h3>
+                <div id="popular-suggestions-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Cards will be dynamically added here -->
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex justify-center items-center space-x-2 mt-4" data-section="popular">
+                    <button
+                        class="prev-btn bg-rose-400 hover:bg-rose-500 text-white py-2 px-4 rounded disabled:opacity-50"
+                        disabled>Previous</button>
+                    <span class="page-indicator text-gray-700">Page 1</span>
+                    <button class="next-btn bg-rose-400 hover:bg-rose-500 text-white py-2 px-4 rounded">Next</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+
+</html>
+
+
+<script type="module">
+    import { weatherGifMap, greetings, suggestions, popularSuggestions } from "../public/js/dictionary.js";
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // User details
+        const userName = "PunkHazard"; // Placeholder user name
+
+        const itemsPerPage = 4;
+        const state = {
+            suggestions: { currentPage: 1, totalItems: suggestions.length },
+            popular: { currentPage: 1, totalItems: popularSuggestions.length },
+        };
+        const suggestionsContainer = document.getElementById("suggestions-cards");
+        const popularSuggestionsContainer = document.getElementById("popular-suggestions-cards");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const pageIndicator = document.getElementById("page-indicator");
+
+        // Function to create a suggestion card
+        function createItemCard(item) {
+            return `
+            <div class="bg-white shadow rounded-lg p-4 flex flex-col justify-between border border-gray-200">
+                <div>
+                    <h4 class="text-lg font-bold text-gray-600">${item.name}</h4>
+                    <p class="text-sm text-gray-500">Distance: ${item.distance}</p>
+                    <div class="mt-2 flex items-center space-x-2">
+                        <span class="text-yellow-500 font-semibold">${item.rating}</span>
+                        <span class="text-sm text-gray-600">(${item.reviews} reviews)</span>
+                    </div>
+                </div>
+                <div class="mt-4 flex space-x-2">
+                    <button
+                        class="text-orange-500 lg:hover:text-orange-600 text-sm font-semibold py-2 px-4 rounded w-full flex">
+                        <img src="../public/svgs/dropby.svg" class="w-5 h-5 mr-2" alt="dropby"> Drop by
+                    </button>
+                    <button
+                        class="text-slate-500 hover:text-slate-600 text-sm font-semibold py-2 px-4 rounded w-full">
+                        See more...
+                    </button>
+                </div>
+            </div>
+        `;
+        }
+
+        // Render cards for a specific section
+        function renderCards(section, items) {
+            const start = (state[section].currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedItems = items.slice(start, end);
+
+            // Get the container
+            console.log(section);
+            const container = document.getElementById(
+                section === "suggestions" ? "suggestions-cards" : "popular-suggestions-cards"
+            );
+
+            // Ensure the container has the required transition classes
+            if (!container.classList.contains("transition-opacity")) {
+                container.classList.add("transition-opacity", "duration-500");
+            }
+
+            // Start fade-out
+            container.classList.remove("opacity-100");
+            container.classList.add("opacity-0");
+
+            // Wait for the fade-out to complete before updating content
+            setTimeout(() => {
+                // Update the content
+                container.innerHTML = paginatedItems.map(createItemCard).join("");
+
+                // Start fade-in
+                container.classList.remove("opacity-0");
+                container.classList.add("opacity-100");
+            }, 500); // Match the duration of the Tailwind transition
+        }
+
+        // Update pagination controls
+        function updatePaginationControls(section) {
+            const totalPages = Math.ceil(state[section].totalItems / itemsPerPage);
+            const currentPage = state[section].currentPage;
+
+            const paginationControls = document.querySelector(`[data-section="${section}"]`);
+            const prevBtn = paginationControls.querySelector(".prev-btn");
+            const nextBtn = paginationControls.querySelector(".next-btn");
+            const pageIndicator = paginationControls.querySelector(".page-indicator");
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            pageIndicator.textContent = `Page ${currentPage}`;
+        }
+        // Handle pagination button clicks
+        function handlePaginationClick(event) {
+            const section = event.currentTarget.getAttribute("data-section");
+            const isNext = event.target.classList.contains("next-btn");
+
+            // Update current page
+            if (isNext) {
+                state[section].currentPage++;
+            } else {
+                state[section].currentPage--;
+            }
+
+            // Re-render the cards and update controls
+            const items = section === "suggestions" ? suggestions : popularSuggestions;
+            renderCards(section, items);
+            updatePaginationControls(section);
+        }
+
+        // Add event listeners to pagination controls
+        document.querySelectorAll("[data-section]").forEach((control) => {
+            control.addEventListener("click", handlePaginationClick);
+        });
+
+        // Initial render
+        renderCards("suggestions", suggestions);
+        renderCards("popular", popularSuggestions);
+        updatePaginationControls("suggestions");
+        updatePaginationControls("popular");
+
+        // Initialize Google Maps
+        async function initMap() {
+            try {
+                const location = await getUserLocation();
+                const userCurrentAddress = await getAddress(location.lat, location.lon);
+
+                // Display current address
+                document.getElementById("address").textContent = userCurrentAddress;
+
+                // Create map instance
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 15,
+                    center: { lat: location.lat, lng: location.lon },
+                });
+
+                // Add marker
+                new google.maps.Marker({
+                    map: map,
+                    position: { lat: location.lat, lng: location.lon },
+                    title: "Current Location",
+                });
+            } catch (error) {
+                console.error("Error initializing map:", error);
+            }
+        }
+        // initMap();
+
+        // Reverse Geocoding function
+        async function getAddress(lat, lng) {
+            const geocoder = new google.maps.Geocoder();
+            const latlng = { lat, lng };
+
+            return new Promise((resolve, reject) => {
+                geocoder.geocode({ location: latlng }, (results, status) => {
+                    if (status === "OK") {
+                        if (results[0]) {
+                            resolve(results[0].formatted_address);
+                        } else {
+                            reject("No results found");
+                        }
+                    } else {
+                        reject(`Geocoder failed due to: ${status}`);
+                    }
+                });
+            });
+        }
+
+        // Get user's current location
+        async function getUserLocation() {
+            return new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+                    (error) => reject(new Error("Unable to fetch location"))
+                );
+            });
+        }
+
+        // Fetch Weather Data
+        async function fetchWeather(location) {
+            try {
+                const apiKey = "74877bd7268a9dd52cda3ae7cf3dc300";
+                const res = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}&units=metric`
+                );
+                const data = await res.json();
+
+                const condition = data.weather[0].main; // "Clear", "Rain", etc.
+                const sunrise = data.sys.sunrise; // Unix timestamp
+                const sunset = data.sys.sunset; // Unix timestamp
+                const currentTime = Math.floor(Date.now() / 1000);
+
+                // Round temperature
+                const temperature = Math.round(data.main.temp);
+
+                // Determine day or night
+                const isDaytime = currentTime >= sunrise && currentTime < sunset;
+
+                // Get appropriate SVG
+                const gifUrl =
+                    (weatherGifMap[condition] && weatherGifMap[condition][isDaytime ? "day" : "night"]) ||
+                    weatherGifMap.Default[isDaytime ? "day" : "night"];
+
+                return {
+                    cityName: data.name,
+                    condition,
+                    temperature,
+                    gifUrl,
+                };
+            } catch (error) {
+                console.error("Error fetching weather:", error);
+                throw new Error("Unable to fetch weather data");
+            }
+        }
+
+        // Update the greeting
+        const greetingElement = document.getElementById("custom-greeting");
+        greetingElement.innerHTML = generateGreeting();
+
+        function generateGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+
+            const timeGreeting =
+                hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+            return `${timeGreeting}, <span class="text-orange-500">${userName}</span>! ${randomGreeting}`;
+        }
+
+        // Clock Widget: Update every second
+        function updateClock() {
+            const now = new Date();
+            const seconds = String(now.getSeconds()).padStart(2, "0");
+            document.getElementById("clock-hours-minutes").textContent = now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            document.getElementById("clock-seconds").textContent = `${seconds}`;
+            document.getElementById("clock-date").textContent = now.toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Fetch Real-Time Context
+        async function fetchContext() {
+            try {
+                const location = await getUserLocation();
+                const weather = await fetchWeather(location);
+
+                // Update weather data
+                document.getElementById("weather-location").textContent = weather.cityName;
+                document.getElementById("weather-condition").textContent = weather.condition;
+                document.getElementById("weather-temp").textContent = `${weather.temperature}°C`;
+
+                // Update GIF
+                const weatherGifContainer = document.getElementById("weather-gif-container");
+                weatherGifContainer.style.backgroundImage = `url('${weather.gifUrl}')`;
+            } catch (error) {
+                console.error("Error fetching context:", error);
+            }
+        }
+        setInterval(fetchContext, 60000); // Update every minute
+        fetchContext();
+    });
+
+</script>
