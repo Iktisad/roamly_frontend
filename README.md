@@ -22,13 +22,9 @@ To set up and run the project locally, follow these steps:
 npm install
 ```
 
-### Compile and Hot-Reload for Development
 
-```bash
-npm run dev
-```
 
-### Compile and Minify for Production
+### Compile and Run in development
 
 ```bash
 npm run build
